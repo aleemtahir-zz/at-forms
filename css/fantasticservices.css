@@ -1,0 +1,29 @@
+ul.choosed-services,ul.list-services {
+    margin: 0;
+    padding: 10px;
+    list-style-position: outside;
+    color: #828a8b;
+    font-size: 14px;
+    list-style-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAANCAYAAABy6+R8AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyBpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBXaW5kb3dzIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjkwMzAzQ0MwNjhFRTExRTVBMjQ4QjM0MUVCOTVGRDFFIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjkwMzAzQ0MxNjhFRTExRTVBMjQ4QjM0MUVCOTVGRDFFIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6OTAzMDNDQkU2OEVFMTFFNUEyNDhCMzQxRUI5NUZEMUUiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6OTAzMDNDQkY2OEVFMTFFNUEyNDhCMzQxRUI5NUZEMUUiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz5p9LAIAAAA0UlEQVR42mLkTZ7CQCRQAeJfQPyIhUgNlkB8AIj/ArEqMZqYgXgaELNB+WxMRGhKA2IDKHsZEN8npEkIiFug7C9AXAZiMCF5Ug6LphaoRhBoBeKnME0gDVeB+DYQeyNpMIA6DQTuAHEfTIIJGiIMUI8uhRoCApOhgQACBdDghmu6D8SVUD4/EK8D4mQgtoGKbYViBmRNDFCr10DZukA8B8r+BbWFAZsmEEgE4pto8n1Q/+DUBArSICjNAA2pVmzxgB5P14DYGRqJEUgGoACAAAMAMqglCNszTHYAAAAASUVORK5CYII=);
+    line-height: 24px
+}
+
+.list-services li {
+    margin-bottom: 3px;
+    line-height: 22px;
+    margin-left: 24px
+}
+.sidebar-inner {
+    background-color: #fff;
+    padding: 0;
+    margin: 0 15px;
+    border-bottom: 1px solid #eee
+}
+
+.sidebar-inner .sidebar-list-items {
+    padding: 0 10px
+}
+.sidebar-inner ul.choosed-services {
+    margin-top: 0;
+    padding: 10px
+}
