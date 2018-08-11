@@ -1,0 +1,28 @@
+.container{
+	background: #eee !important;
+}
+.custom-radio{
+	margin-left: 20px;
+}
+
+.jumbotron{
+	border-radius: 5px !important;
+}
+.custom-radio input[type="radio"] {
+    opacity: 0;
+}
+.wrapper{
+	/*position: absolute;*/
+	margin: 0 auto;
+}
+.header{
+	padding-top: 25px;
+	height: 80px;
+}
+.custom-radio label{
+	font-size: 1.2em;
+}
+
+hr{
+	overflow: hidden;
+}

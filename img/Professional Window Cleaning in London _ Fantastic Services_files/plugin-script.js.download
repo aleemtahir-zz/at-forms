@@ -1,0 +1,256 @@
+// Cookie functions
+    function setCookie(cname, cvalue, exdays) {
+        var d = new Date();
+        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+        var expires = "expires="+d.toUTCString(),
+            domainName = window.location.hostname;
+
+        document.cookie = cname + "=" + cvalue + ";" + expires + "; domain=" + domainName + "; path=/";
+    }
+
+    function getCookie(cname) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for(var i = 0; i <ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+
+    function isCookieSet() {
+        var barsClosed = getCookie('bars-closed');
+        if (barsClosed != '') {
+            return true;
+        } else {
+           return false;
+        }
+    }
+
+// Functions
+    // Close button for notification bar
+    function closeBar(object, notificationBarContainer) {
+        var closeButton = document.getElementById('close-button');
+
+        if (closeButton != null || notificationBarContainer != null) {
+
+            notificationBarContainer.addEventListener('click', function(event) {
+
+                var targetTag = event.target.localName;
+                
+                if (targetTag == 'a') {
+                    handleCookie(object, notificationBarContainer);
+
+                } else if (event.target == closeButton) {
+                    notificationBarContainer.style.display = 'none';
+                    document.body.style.paddingTop = 0;
+                    document.body.style.paddingBottom = 0;
+
+                    var headerSectionElement = document.querySelector('.header-section.bar-allowed'),
+                        headerHolderElement = document.querySelector('.header-section.bar-allowed .header-holder');
+
+                    if (headerSectionElement != null && headerHolderElement != null) {
+                        headerSectionElement.style.minHeight = headerHolderElement.offsetHeight + 'px';
+                    }
+
+                    handleCookie(object, notificationBarContainer);
+                }
+            });
+        }
+    }
+
+    // Cookie handler
+    function handleCookie(object, notificationBarContainer) {
+        var closedFor = (object.bar_closed_for != '' ? object.bar_closed_for : 1),
+            barId     = +notificationBarContainer.getAttribute('bar-id');
+
+        if (!isCookieSet()) {
+            var cookieArray = [barId],
+            cookieValue = JSON.stringify(cookieArray);
+
+            setCookie('bars-closed', cookieValue, closedFor);
+        } else {
+            var barsClosed = JSON.parse(decodeURIComponent(getCookie('bars-closed')));
+            barsClosed.push(barId);
+
+            var cookieValue = JSON.stringify(barsClosed);
+
+            setCookie('bars-closed', cookieValue, closedFor);
+        }  
+    }
+
+    // Function for creating countdown functionality
+    function initiateCountdown(expirationDate, countdownElement) {
+        // Reformatting date needed for IE and Safari
+        expirationDate = expirationDate.replace(/ /g, 'T');
+        
+        var countDownDate = new Date(expirationDate).getTime();
+        
+        var interval = setInterval(function() {
+            // Get todays date and time
+            var now = new Date(new Date().toLocaleString('en-US', { timeZone: serverData.timezone })).getTime();
+
+            // Find the distance between now an the count down date
+            var distance = countDownDate - now;
+
+            // Time calculations for days, hours, minutes and seconds
+            var days    = Math.floor(distance / (1000 * 60 * 60 * 24));
+                hours   = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            days = days < 10 ? '0' + days : days;
+            hours = hours < 10 ? '0' + hours : hours;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+            
+            
+            // Display the result in the element
+            countdownElement.innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+
+            // If the count down is finished, write some text 
+            if (distance < 0) {
+                clearInterval(interval);
+                countdownElement.innerHTML = "EXPIRED";
+                setTimeout(function() {
+                    document.getElementById('bar-container').remove();
+                }, 1000);
+            }
+        }, 1000);
+    }
+
+
+    // Countdown functionality
+    function displayCountdown(object) {
+        if (object.countdown == 'yes') {
+            var countdownContainer = document.getElementById('countdown');
+                countdownElement   = document.createElement('span'),
+                countdownIcon      = document.createElement('div');
+
+            if(countdownContainer != null) {
+                countdownContainer.parentNode.style.display = 'inline-block';
+                
+
+                countdownContainer.style.display        = 'inline-block';
+                countdownContainer.style.position       = 'relative';
+                countdownContainer.style.margin         = '0 15px';
+                
+
+                countdownContainer.style.fontSize    = object.countdown_settings.text_size + 'px';
+                countdownContainer.style.color       = object.countdown_settings.text_color;
+
+                countdownElement.style.fontSize    = object.countdown_settings.text_size + 'px';
+                countdownElement.style.lineHeight  = (parseInt(object.countdown_settings.text_size) * 1.5) + 'px';
+                countdownElement.innerHTML         = '00d 00h 00m 00s';
+                countdownElement.style.width       = 'auto';
+                countdownElement.style.display     = 'inline-block';
+
+                initiateCountdown(object.bar_expiration_date, countdownElement);
+
+                // Countdown Icon
+                if (object.countdown_settings.icon != '') {
+                    countdownIcon.style.width = (parseInt(object.countdown_settings.text_size) * 1.5) + 'px';
+                    countdownIcon.style.height = (parseInt(object.countdown_settings.text_size) * 1.5) + 'px';
+                    countdownIcon.style.display = 'inline-block';
+                    countdownIcon.style.position = 'absolute';
+                    countdownIcon.style.top = '0';
+                    countdownIcon.style.left = '0';
+                    countdownIcon.style.backgroundImage = 'url(' + object.countdown_settings.icon + ')';
+                    countdownIcon.style.backgroundSize = 'cover';
+
+                    // Setting padding left to container in order to make space for icon
+                    countdownContainer.style.paddingLeft    = (parseInt(object.countdown_settings.text_size) * 1.5) + 'px';
+                    
+                    // Append icon
+                    countdownContainer.appendChild(countdownIcon);
+                }
+                
+                
+                // Append node to notification bar body
+                countdownContainer.appendChild(countdownElement);
+                countdownElement.style.minWidth = countdownElement.offsetWidth + 10 + 'px';
+
+                var barBody = document.getElementById('bar-body');
+
+            }
+
+        }
+    }
+
+
+    // Bar positioning
+    function positionBar(object, notificationBarContainer) {
+        // Get Bar Position
+        var barPosition = object.bar_position;
+
+        // Check if bar is fixed alone or inside of fixed header
+        if (object.fixed_elements == 'bar-and-header') {
+            headerElement = document.querySelector('.header-section.bar-allowed .header-holder');
+            
+            if (headerElement != null) {
+                notificationBarContainer.style.position = 'relative';
+                headerElement.insertBefore(notificationBarContainer, headerElement.firstChild);
+            }
+        } else if (object.fixed_elements == 'bar' && barPosition != '') {
+            notificationBarContainer.style.position = 'fixed';
+            
+            // Setting padding on body, needed for proper visualisation of the bar
+            if (barPosition == 'top') 
+                document.body.style.paddingTop = notificationBarContainer.offsetHeight + 'px';
+            else if (barPosition == 'bottom')
+                document.body.style.paddingBottom = notificationBarContainer.offsetHeight + 'px';
+        } else {
+            headerElement = document.querySelector('.header-section.bar-allowed .header-holder');
+            
+            if (headerElement != null) {
+                notificationBarContainer.style.position = 'relative';
+                headerElement.insertBefore(notificationBarContainer, headerElement.firstChild);
+            }
+
+            var barHeight = notificationBarContainer.offsetHeight;
+            
+
+            headerElement.style.transition = 'all 150ms ease';
+            
+            window.addEventListener('scroll', function(event) {
+                if (window.pageYOffset > barHeight) {
+                    // bar is hidden
+                    headerElement.style.transform = 'translateY(-' + (barHeight + 5 ) + 'px)';
+
+                } else {
+                    // bar is shown
+                    headerElement.style.transform = 'translateY(0)';
+                }
+
+
+            });
+        }
+    }
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Getting hidden data, sent from PHP, needed to implement functionalities in JS
+    var hiddenElement = document.getElementById('hidden-data');
+    
+    if (hiddenElement != null) {
+        var object = JSON.parse(hiddenElement.value);
+    }
+
+    if (object == null) {
+        object = {};
+    }
+
+    var notificationBarContainer = document.getElementById('bar-container');
+
+    closeBar(object, notificationBarContainer);
+    
+    displayCountdown(object);
+
+    positionBar(object, notificationBarContainer);
+});

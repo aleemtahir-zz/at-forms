@@ -1,0 +1,418 @@
+// Register the PerformanceObserver to track paint timing. Important: you must ensure your PerformanceObserver is registered in the
+// <head> of your document before any stylesheets, so it runs before FP/FCP happens.
+// https://developers.google.com/web/fundamentals/performance/user-centric-performance-metrics
+
+var enablePerformanceObserver = true;
+var enableVisualization = false;
+
+if (enablePerformanceObserver) {
+
+    var showOnce = false;
+
+    var selfOrigin = [];
+    var selfOriginTotal = 0;
+
+    var sameOriginAncestor = [];
+    var sameOriginAncestorTotal = 0;
+
+    var sameOriginDescendant = [];
+    var sameOriginDescendantTotal = 0;
+
+    var sameOrigin = [];
+    var sameOriginTotal = 0;
+
+    var crossOriginAncestor = [];
+    var crossOriginAncestorTotal = 0;
+
+    var crossOriginDescendant = [];
+    var crossOriginDescendantTotal = 0;
+
+    var crossOriginUnreachable = [];
+    var crossOriginUnreachableTotal = 0;
+
+    var multipleContexts = [];
+    var multipleContextsTotal = 0;
+
+    var unknownOrigin = [];
+    var unknownOriginTotal = 0;
+
+
+    var cssRes = [];
+    var cssResTotal = 0;
+
+    var jsRes = [];
+    var jsResTotal = 0;
+
+    var extRes = [];
+    var extResTotal = 0;
+
+    var imagesRes = [];
+    var imageResTotal = 0;
+
+    var fontsRes = [];
+    var fontsResTotal = 0;
+
+    var longTasks = [];
+    var longTasksTotal = 0;
+
+    try {
+        const observer = new PerformanceObserver((list) => {
+
+            for (const entry of list.getEntries()) {
+
+                const entryType = entry.entryType;
+                const metricName = entry.name;
+                const paintTime = Math.round(entry.startTime + entry.duration);
+                const startTime = Math.round(entry.startTime);
+                const duration = Math.round(entry.duration);
+                const atribution = JSON.stringify(entry.attribution);
+
+                //Loaded resources
+                if (entryType == 'resource') {
+
+                    var regExt = /\.([0-9a-z]+)(?:[\?#]|$)/i;
+                    var ext = (metricName).match(regExt);
+
+                    if (ext != null && ext.length != 0) {
+                        switch (ext[1]) {
+                            case 'css':
+                                cssRes.push({
+                                    'File Name:': metricName,
+                                    'Time:': duration + 'ms'
+                                });
+                                cssResTotal += duration;
+                                break;
+
+                            case 'js':
+                                jsRes.push({
+                                    'File Name:': metricName,
+                                    'Time:': duration + 'ms'
+                                });
+                                jsResTotal += duration;
+                                break;
+
+                            case 'jpg':
+                            case 'jpeg':
+                            case 'png':
+                            case 'gif':
+                            case 'svg':
+                                imagesRes.push({
+                                    'File Name:': metricName,
+                                    'Time:': duration + 'ms'
+                                });
+                                imageResTotal += duration;
+                                break;
+
+                            case 'woff2':
+                            case 'ttf':
+                            case 'otf':
+                            case 'woff':
+                            case 'eot':
+                                fontsRes.push({
+                                    'File Name:': metricName,
+                                    'Time:': duration + 'ms'
+                                });
+                                fontsResTotal += duration;
+                                break;
+
+                            default:
+                                extRes.push({
+                                    'File Name:': metricName,
+                                    'Time:': duration + 'ms'
+                                });
+                                extResTotal += duration;
+                                break;
+                        }
+                    }
+
+                    // Real Time Debug
+                    // console.group('%c Data Resources:', 'color: green');
+                    // console.info('Type ' + entryType + ':' + metricName + ": " + duration + 'ms');
+                    // console.groupEnd();
+                }
+
+
+
+                if (entryType == 'longtask') {
+
+                    switch (metricName) {
+                        // self: long task is from within my own frame
+                        case 'self':
+                            selfOrigin.push({
+                                'metricName': metricName,
+                                'time': duration
+                            });
+                            selfOriginTotal += duration;
+                            break;
+                            // same-origin-ancestor: long task is from a same - origin ancestor frame
+                        case 'same-origin-ancestor':
+                            sameOriginAncestor.push({
+                                'metricName': metricName,
+                                'time': duration
+                            });
+                            sameOriginAncestorTotal += duration;
+                            break;
+                            // same-origin-descendant: long task is from a same - origin descendant frame
+                        case 'same-origin-descedant':
+                            sameOriginDescendant.push({
+                                'metricName': metricName,
+                                'time': duration
+                            });
+                            sameOriginDescendantTotal += duration;
+                            break;
+                            // same-origin: long task is from an unreachable same - origin frame
+                        case 'same-origin':
+                            sameOrigin.push({
+                                'metricName': metricName,
+                                'time': duration
+                            });
+                            break;
+                            // cross-origin-ancestor: long task is from a cross - origin ancestor frame
+                        case 'cross-origin-ancestor':
+                            crossOriginAncestor.push({
+                                'metricName': metricName,
+                                'time': duration
+                            });
+                            break;
+                            // cross-origin-descendant: long task is from a cross - origin descendant frame
+                        case 'cross-origin-descendant':
+                            sameOriginDescendant.push({
+                                'metricName': metricName,
+                                'time': duration
+                            });
+                            break;
+                            // cross-origin-unreachable: long task is from a cross - origin unreachable frame
+                        case 'cross-origin-unreachable':
+                            crossOriginUnreachable.push({
+                                'metricName': metricName,
+                                'time': duration
+                            });
+                            break;
+                            // multiple-contexts: multiple frame contexts were involved in the long task
+                        case 'multiple-contexts':
+                            multipleContexts.push({
+                                'metricName': metricName,
+                                'time': duration
+                            });
+                            break;
+                            // unknown: none of the above
+                        case 'unknown':
+                            unknownOrigin.push({
+                                'metricName': metricName,
+                                'time': duration
+                            });
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                    longTasksTotal += duration;
+                    longTasks.push({
+                        'metricName': metricName,
+                        'time': duration
+                    });
+
+                    // Real Time Debug
+                    // console.group('%c Data Long Task:', 'color: #e8a300');
+                    // console.info('Type ' + entryType + ':' + metricName + ": " + duration + 'ms');
+                    // console.groupEnd();
+                }
+
+                // `name` will be either 'first-paint' or 'first-contentful-paint'.
+                if (entryType == 'paint') {
+
+                    if (!showOnce && enableVisualization) {
+                        console.info('%c                     ', 'color: #bada55;text-decoration: line-through;');
+                        console.info('%c Performance Metrics ', 'color: #bada55');
+                        console.info('%c                     ', 'color: #bada55;text-decoration: line-through;');
+                    }
+
+                    var buildProgressBar = function (enableVisualization, title, resource, resourceTotal, total, color) {
+
+                        var calcPercent = function (v, t) {
+                            var data = {
+                                perc: 0,
+                                empty: 0,
+                            };
+
+                            var pTotal = parseInt(t);
+                            var pEarned = parseInt(v);
+                            var perc, empty = "";
+
+                            data.perc = Math.round(((pEarned / pTotal) * 100).toFixed(3));
+                            data.empty = Math.round(parseInt(100) - parseInt(data.perc));
+
+                            return data;
+                        };
+
+                        var calcData = calcPercent(resourceTotal, total);
+
+                        //Fix Negative Values
+                        // console.log(calcData, 'Calculation Data');
+                        if (calcData.empty < 0) {
+                            calcData.perc = calcData.perc - calcData.empty;
+                            calcData.empty = 0;
+                        }
+
+                        var progressBarBuildFill = Array(Math.round(calcData.perc / 2)).join(" ");
+                        var progressBarBuildEmpty = Array(Math.round(calcData.empty / 2)).join(" ");
+
+
+                        //Progress Bar Css
+                        if (enableVisualization) {
+                            console.groupCollapsed('%c ' + title + ' Paint:', 'color: ' + color);
+                            console.info('%c ' + progressBarBuildFill + '%c ' + progressBarBuildEmpty + '%c ' + '(' + calcData.perc + '%)' + '%c [ ' + title + ' Resources: ' + resourceTotal + 'ms' + ' | Total: ' + total + 'ms ]',
+                                'padding:2px 1px;line-height:10px;background:' + color,
+                                'padding:2px 1px;line-height:10px;background:#b3b3b3',
+                                'padding:2px 1px;line-height:10px;background:none;color: ' + color,
+                                'color:white');
+
+                            //Get Data
+                            console.info(title + ' Resources:', resource);
+                        }
+                        console.groupEnd();
+
+                        //Send Data to Data Layer
+                        // window.dataLayer.push({
+                        //     'eventCategory': 'Performance Metrics:',
+                        //     'eventType': metricName,
+                        //     'eventTitle': title,
+                        //     'eventResourceTotal': resourceTotal,
+                        //     'eventTotal': total,
+                        // });
+
+                    };
+
+                    switch (metricName) {
+                        case 'first-paint':
+
+                            if (enableVisualization) {
+                                console.groupCollapsed('%c Data First Paint Metrics:', 'color: #bada55');
+                            }
+
+                            var collectedData = {
+                                'event': 'First Paint Metrics:',
+                                'css': [],
+                                'js': [],
+                                'images': [],
+                                'fonts': [],
+                                'extResources': [],
+                                'longTasks': [],
+                            };
+
+
+                            //CSS
+                            buildProgressBar(enableVisualization, 'CSS', cssRes, cssResTotal, paintTime, '#337ab7');
+                            collectedData.css.push(
+                                cssResTotal, paintTime
+                            );
+
+                            //JS
+                            buildProgressBar(enableVisualization, 'JS', jsRes, jsResTotal, paintTime, '#ff6699');
+                            collectedData.js.push(
+                                jsResTotal, paintTime
+                            );
+
+                            //Images
+                            buildProgressBar(enableVisualization, 'IMAGES', imagesRes, imageResTotal, paintTime, '#ffd11a');
+                            collectedData.images.push(
+                                imageResTotal, paintTime
+                            );
+
+                            //Fonts
+                            buildProgressBar(enableVisualization, 'FONTS', fontsRes, fontsResTotal, paintTime, '#00e64d');
+                            collectedData.fonts.push(
+                                fontsResTotal, paintTime
+                            );
+
+                            //External Resources
+                            buildProgressBar(enableVisualization, 'Ext. Resources', extRes, extResTotal, paintTime, '#ac3939');
+                            collectedData.extResources.push(
+                                extResTotal, paintTime
+                            );
+
+                            //Long Tasks
+                            buildProgressBar(enableVisualization, 'Long Tasks', longTasks, longTasksTotal, paintTime, '#bf80ff');
+                            collectedData.longTasks.push(
+                                longTasksTotal, paintTime
+                            );
+
+
+                            window.dataLayer.push(collectedData);
+
+
+                            // console.group('%c Data Paint:', 'color: red');
+                            // console.info('Type ' + entryType + ':' + metricName + ": " + paintTime + 'ms');
+                            // console.groupEnd();
+
+                            console.groupEnd();
+                            break;
+
+                        case 'first-contentful-paint':
+
+                            if (enableVisualization) {
+                                console.groupCollapsed('%c Data Contentful Paint Metrics:', 'color: #bada55');
+                            }
+
+
+                            //CSS
+                            buildProgressBar(enableVisualization, 'CSS', cssRes, cssResTotal, paintTime, '#337ab7');
+
+                            //JS
+                            buildProgressBar(enableVisualization, 'JS', jsRes, jsResTotal, paintTime, '#ff6699');
+
+                            //Images
+                            buildProgressBar(enableVisualization, 'IMAGES', imagesRes, imageResTotal, paintTime, '#ffd11a');
+
+                            //Fonts
+                            buildProgressBar(enableVisualization, 'FONTS', fontsRes, fontsResTotal, paintTime, '#00e64d');
+
+                            //External Resources
+                            buildProgressBar(enableVisualization, 'Ext. Resources', extRes, extResTotal, paintTime, '#ac3939');
+
+                            //Long Tasks
+                            buildProgressBar(enableVisualization, 'Long Tasks', longTasks, longTasksTotal, paintTime, '#bf80ff');
+
+                            // console.group('%c Data Paint:', 'color: red');
+                            // console.info('Type ' + entryType + ':' + metricName + ": " + paintTime + 'ms');
+                            // console.groupEnd();
+
+
+                            console.groupEnd();
+
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                    if (!showOnce) {
+                        showOnce = true;
+                    }
+
+
+                }
+
+            }
+
+        });
+
+
+        // Start observing the entry types you care about.
+        observer.observe({
+            entryTypes: ['resource', 'paint', 'longtask', 'shorttask', 'mark', 'measure']
+        });
+
+        // performance.mark('registered-observer');
+        // const bookBtn = document.querySelectorAll('[data-book-btn="true"]')[0];
+
+        // bookBtn.addEventListener('click', (event) => {
+        //  performance.measure('button clicked');
+        // });
+
+
+    } catch (error) {
+        console.info('%c Performance Metrics Unsupported', 'color: #ffe0b3');
+    }
+}

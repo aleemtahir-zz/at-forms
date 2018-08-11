@@ -1,0 +1,84 @@
+Element.prototype.parents = function(selector) {
+	var elements = [];
+	var elem = this;
+    var ishaveselector = selector !== undefined;
+    
+    if (!Element.prototype.matches)
+        Element.prototype.matches = Element.prototype.msMatchesSelector;
+
+	while ((elem = elem.parentElement) !== null) {
+		if (elem.nodeType !== Node.ELEMENT_NODE) {
+			continue;
+		}
+ 
+		if (!ishaveselector || elem.matches(selector)) {
+			elements.push(elem);
+		}
+	}
+ 
+	return elements;
+};
+
+(function(){
+    var bodyOverlay = document.createElement('div');
+
+    bodyOverlay.id = 'deal-overlay';
+    document.body.appendChild(bodyOverlay);
+    
+    document.addEventListener('click', function(e) {
+
+        var target = e.target,
+            visibleDealDescription = false;
+        
+        if (target.id === 'deal-overlay') {
+            closeDeal();
+        }
+
+        if (target.classList.contains('view_deal')) {
+            var dealHolder = target.parents('.deal-offer-holder')[0],
+                dealHolderDescription = target.parents('.deal-offer-holder')[0].children[1];
+
+            closeDeal();
+            bodyOverlay.style.display = 'block';
+
+            if (!dealHolder.classList.contains('description-visible')) {
+                dealHolder.classList.add('description-visible');
+                visibleDealDescription = true;
+
+                var btnOfferVisible = dealHolderDescription.querySelector('.btn-offer-visible');
+
+                btnOfferVisible.onclick = function() {
+                    var serviceCategory = this.getAttribute('data-service-category'),
+                        serviceType = this.getAttribute('data-service-type');
+
+                    if(typeof OnlineBookingFormOptions != 'undefined') {
+                        OnlineBookingFormOptions['template'] = "deals";
+                        OnlineBookingFormOptions['defaultServiceCategory'] = serviceCategory;
+                        OnlineBookingFormOptions['defaultServiceType'] = serviceType;
+                    } else if(typeof obfOptions != 'undefined') {
+                        obfOptions['template'] = "deals";
+                        obfOptions['defaultServiceCategory'] = serviceCategory;
+                        obfOptions['defaultServiceType'] = serviceType;
+                    }
+
+                    closeDeal();
+                };
+            }
+        }
+
+        if (target.classList.contains('deal-close')) {
+            closeDeal();
+        }
+    });
+
+    function closeDeal() {
+        var visibleDeal = document.getElementsByClassName('description-visible'),
+            bodyOverlay = document.getElementById('deal-overlay');
+
+        if (visibleDeal.length > 0) {
+            visibleDeal[0].classList.remove('description-visible');
+            bodyOverlay.style.display = 'none';
+        }
+
+    }
+}());

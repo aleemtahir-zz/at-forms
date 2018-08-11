@@ -1,0 +1,17 @@
+// if(window.location.href.indexOf("operation-manual") > -1) {
+//    window.chatID = "58ff250ad0feb4c165f1944b";
+// }
+
+var extend = function (t, s) {
+    for (var k in s)t[k] = s[k];
+    return t;
+};
+var loadChatScript = function () {
+    document.body.appendChild(extend(document.createElement("script"), {
+        src: "//chat.mochapp.com/public/js/chat.js",
+        onload: function () {
+            console.log("Chat script loaded");
+        }
+    }));
+};
+loadChatScript();
