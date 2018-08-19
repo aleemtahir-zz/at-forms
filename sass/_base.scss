@@ -1,0 +1,48 @@
+@import '_variables';
+html{
+    font-size: 100%;
+}
+body{
+    font-family: 'Raleway', sans-serif;
+}
+a{
+    color: #00a8e3;
+}
+.backgroundEEE{
+    background-color: $commonBackground;    
+}
+.bold{
+    font-weight: 700;
+}
+.btn{
+    padding: 15px;
+    white-space: normal;
+}
+.btn-grey{
+    background-color: #fff;
+    color: #aaa;
+    border: 1px solid #aaa;
+    position: relative;
+    &:hover{
+        border: 1px solid #c5d1d8;
+    }
+    &.active{
+        border: 1px solid #05a9e3;
+        font-weight: 700;
+        color: #05a9e3;
+    }
+}
+.btn-blue{
+    background-color: #00a8e3;
+    color: #fff;
+    padding: 10px;
+}
+.section-title{
+    padding: 15px 0;
+    margin-bottom: 0;
+}
+@media (max-width: 767px){
+    .hidden-xs{
+        display: none;
+    }
+}
