@@ -155,7 +155,18 @@ function add_service(data,customClass)
 //get Btn Class
 function getBtnClass(scope)
 {
-    var btnMapper = ['btn-sub', 'btn-place', 'btn-floor', 'btn-side', 'btn-tap', 'btn-book', 'btn-conservatory', 'btn-glassroof', 'btn-skylight'];
+    var btnMapper = [
+                        'btn-sub',
+                        'btn-place',
+                        'btn-floor',
+                        'btn-side', 
+                        'btn-tap', 
+                        'btn-book', 
+                        'btn-bed', 
+                        'btn-conservatory', 
+                        'btn-glassroof', 
+                        'btn-skylight'
+                    ];
 
     for (var i = btnMapper.length - 1; i >= 0; i--) 
     {

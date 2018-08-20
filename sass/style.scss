@@ -1,7 +1,8 @@
 @import 'base.scss';
 .main-container{
-    .btn:focus{
-        box-shadow : 0 0 0 0;
+    .btn:focus, input:focus, btn-info{
+        outline : none;
+        box-shadow : none;
     }
     .time-line{
         overflow: hidden;
